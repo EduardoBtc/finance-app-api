@@ -1,5 +1,5 @@
 import { GetUserByIdUseCase } from '../use-cases/get-user-by-id.js';
-import { badRequest, internalServerError, ok } from './helper.js';
+import { badRequest, internalServerError, notFound, ok } from './helper.js';
 import validator from 'validator';
 
 export class GetUserByIdController {
@@ -18,6 +18,13 @@ export class GetUserByIdController {
             }
 
             const user = await getUserByIdUseCase.execute(userId);
+
+            if (!user) {
+                return notFound({
+                    errorMessage: `User with ID ${userId} not found`,
+                });
+            }
+
             return ok(user);
         } catch (error) {
             console.error(error);
