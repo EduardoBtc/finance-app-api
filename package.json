@@ -9,7 +9,8 @@
         "lint:fix": "eslint . --fix",
         "format": "prettier --write .",
         "postinstall": "husky install",
-        "migrate": "node src/db/postgres/migrations/exec.js"
+        "migrate": "node src/db/postgres/migrations/exec.js",
+        "start:dev": "node --watch index.js"
     },
     "keywords": [],
     "author": "",
@@ -26,6 +27,7 @@
         "dotenv": "^17.2.3",
         "express": "^5.2.1",
         "pg": "^8.16.3",
-        "uuid": "^13.0.0"
+        "uuid": "^13.0.0",
+        "validator": "^13.15.26"
     }
 }
