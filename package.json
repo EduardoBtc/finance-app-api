@@ -8,7 +8,8 @@
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
         "format": "prettier --write .",
-        "postinstall": "husky install"
+        "postinstall": "husky install",
+        "migrate": "node src/db/postgres/migrations/exec.js"
     },
     "keywords": [],
     "author": "",
