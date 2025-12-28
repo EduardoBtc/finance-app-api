@@ -19,5 +19,10 @@
         "eslint": "^9.39.2",
         "git-commit-msg-linter": "^5.0.8",
         "globals": "^16.5.0"
+    },
+    "dependencies": {
+        "dotenv": "^17.2.3",
+        "express": "^5.2.1",
+        "pg": "^8.16.3"
     }
 }
