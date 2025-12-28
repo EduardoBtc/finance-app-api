@@ -8,7 +8,7 @@
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
         "format": "prettier --write .",
-        "postinstall": "npm husky install"
+        "postinstall": "husky install"
     },
     "keywords": [],
     "author": "",
