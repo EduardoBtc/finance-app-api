@@ -2,7 +2,7 @@ import { UpdateUserUseCase } from '../use-cases/index.js';
 import {
     badRequest,
     internalServerError,
-    notFound,
+    userNotFoundResponse,
     ok,
     uuidInvalidResponse,
     isUserIdValid,
@@ -48,9 +48,7 @@ export class UpdateUserController {
 
             const user = await postgresGetUserByIdRepository.execute(userId);
             if (!user) {
-                return notFound({
-                    errorMessage: `User with ID ${userId} not found`,
-                });
+                return userNotFoundResponse(userId);
             }
 
             if (params.password) {

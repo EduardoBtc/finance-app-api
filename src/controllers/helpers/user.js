@@ -1,9 +1,14 @@
-import { badRequest } from './http.js';
+import { badRequest, notFound } from './http.js';
 import validator from 'validator';
 
 export const uuidInvalidResponse = () =>
     badRequest({
         errorMessage: 'Invalid UUID. Send a valid UUID.',
+    });
+
+export const userNotFoundResponse = (userId) =>
+    notFound({
+        errorMessage: `User with ID ${userId} not found`,
     });
 
 export const invalidPasswordResponse = () =>

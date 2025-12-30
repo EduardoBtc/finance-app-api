@@ -1,7 +1,7 @@
 import { GetUserByIdUseCase } from '../use-cases/index.js';
 import {
     internalServerError,
-    notFound,
+    userNotFoundResponse,
     ok,
     uuidInvalidResponse,
     isUserIdValid,
@@ -22,9 +22,7 @@ export class GetUserByIdController {
             const user = await getUserByIdUseCase.execute(userId);
 
             if (!user) {
-                return notFound({
-                    errorMessage: `User with ID ${userId} not found`,
-                });
+                return userNotFoundResponse(userId);
             }
 
             return ok(user);
