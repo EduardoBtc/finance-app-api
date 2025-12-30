@@ -1,21 +1,31 @@
 import { UpdateUserUseCase } from '../use-cases/update-user.js';
-import { badRequest, internalServerError, notFound, ok } from './helper.js';
-import validator from 'validator';
+import {
+    badRequest,
+    internalServerError,
+    notFound,
+    ok,
+} from './helpers/http.js';
 import { PostgresGetUserByIdRepository } from '../repositories/postgres/get-user-by-id.js';
 import { EmailAlreadyInUseError } from '../errors/users.js';
+import {
+    invalidPasswordResponse,
+    uuidInvalidResponse,
+    invalidEmailResponse,
+    emailAlreadyInUseResponse,
+    isUserIdValid,
+    isEmailValid,
+    isPasswordValid,
+} from './helpers/user.js';
 
 export class UpdateUserController {
     async execute(httpRequest) {
         try {
-            const updateUserParams = httpRequest.body;
+            const params = httpRequest.body;
             const userId = httpRequest.params.userId;
 
-            const isUserIdValid = validator.isUUID(userId);
-            if (!isUserIdValid) {
-                return badRequest({
-                    errorMessage:
-                        'Invalid user ID, not a valid UUID. Send a valid user ID. ',
-                });
+            const isUserIdValidResponse = isUserIdValid(userId);
+            if (!isUserIdValidResponse) {
+                return uuidInvalidResponse();
             }
 
             const allowedFields = [
@@ -25,7 +35,7 @@ export class UpdateUserController {
                 'password',
             ];
 
-            const someFieldIsNotAllowed = Object.keys(updateUserParams).some(
+            const someFieldIsNotAllowed = Object.keys(params).some(
                 (field) => !allowedFields.includes(field),
             );
 
@@ -45,38 +55,31 @@ export class UpdateUserController {
                 });
             }
 
-            if (updateUserParams.password) {
-                const passwordIsValid = updateUserParams.password.length >= 8;
+            if (params.password) {
+                const passwordIsValid = isPasswordValid(params.password);
                 if (!passwordIsValid) {
-                    return badRequest({
-                        errorMessage:
-                            'Password must be at least 8 characters long.',
-                    });
+                    return invalidPasswordResponse();
                 }
             }
 
-            if (updateUserParams.email) {
-                const isEmailValid = validator.isEmail(updateUserParams.email);
-                if (!isEmailValid) {
-                    return badRequest({
-                        errorMessage:
-                            'Invalid email. Send a valid email address.',
-                    });
+            if (params.email) {
+                const isEmailValidResponse = isEmailValid(params.email);
+
+                if (!isEmailValidResponse) {
+                    return invalidEmailResponse();
                 }
             }
 
             const updateUserUseCase = new UpdateUserUseCase();
             const updatedUserResult = await updateUserUseCase.execute(
                 userId,
-                updateUserParams,
+                params,
             );
 
             return ok(updatedUserResult);
         } catch (error) {
             if (error instanceof EmailAlreadyInUseError) {
-                return badRequest({
-                    errorMessage: error.message,
-                });
+                return emailAlreadyInUseResponse();
             }
             console.error(error);
             return internalServerError({

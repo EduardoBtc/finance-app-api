@@ -1,8 +1,14 @@
 import { CreateUserUseCase } from '../use-cases/create-user.js';
-import { badRequest, created, internalServerError } from './helper.js';
+import { badRequest, created, internalServerError } from './helpers/http.js';
 
-import validator from 'validator';
 import { EmailAlreadyInUseError } from '../errors/users.js';
+import {
+    invalidPasswordResponse,
+    emailAlreadyInUseResponse,
+    invalidEmailResponse,
+    isPasswordValid,
+    isEmailValid,
+} from './helpers/user.js';
 
 export class CreateUserController {
     async execute(httpRequest) {
@@ -24,19 +30,14 @@ export class CreateUserController {
                 }
             }
 
-            const passwordIsValid = params.password.length >= 8;
+            const passwordIsValid = isPasswordValid(params.password);
             if (!passwordIsValid) {
-                return badRequest({
-                    errorMessage:
-                        'Password must be at least 8 characters long.',
-                });
+                return invalidPasswordResponse();
             }
 
-            const isEmailValid = validator.isEmail(params.email);
-            if (!isEmailValid) {
-                return badRequest({
-                    errorMessage: 'Invalid email. Send a valid email address.',
-                });
+            const isEmailValidResponse = isEmailValid(params.email);
+            if (!isEmailValidResponse) {
+                return invalidEmailResponse();
             }
 
             const createUserUseCase = new CreateUserUseCase();
@@ -45,9 +46,7 @@ export class CreateUserController {
             return created(createdUser);
         } catch (error) {
             if (error instanceof EmailAlreadyInUseError) {
-                return badRequest({
-                    errorMessage: error.message,
-                });
+                return emailAlreadyInUseResponse();
             }
             console.error(error);
             return internalServerError({
