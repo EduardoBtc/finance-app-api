@@ -1,14 +1,16 @@
 import { CreateUserUseCase } from '../use-cases/create-user.js';
-import { badRequest, created, internalServerError } from './helpers/http.js';
-
-import { EmailAlreadyInUseError } from '../errors/users.js';
 import {
+    badRequest,
+    created,
+    internalServerError,
     invalidPasswordResponse,
     emailAlreadyInUseResponse,
     invalidEmailResponse,
     isPasswordValid,
     isEmailValid,
-} from './helpers/user.js';
+} from './helpers/index.js';
+
+import { EmailAlreadyInUseError } from '../errors/users.js';
 
 export class CreateUserController {
     async execute(httpRequest) {
