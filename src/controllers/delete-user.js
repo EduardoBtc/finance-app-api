@@ -1,17 +1,14 @@
-import { GetUserByIdUseCase } from '../use-cases/index.js';
+import { DeleteUserUseCase } from '../use-cases/index.js';
 import {
     internalServerError,
-    notFound,
-    ok,
     uuidInvalidResponse,
     isUserIdValid,
+    ok,
 } from './helpers/index.js';
 
-export class GetUserByIdController {
+export class DeleteUserController {
     async execute(httpRequest) {
         try {
-            const getUserByIdUseCase = new GetUserByIdUseCase();
-
             const userId = httpRequest.params.userId;
 
             const isUserIdValidResponse = isUserIdValid(userId);
@@ -19,15 +16,9 @@ export class GetUserByIdController {
                 return uuidInvalidResponse();
             }
 
-            const user = await getUserByIdUseCase.execute(userId);
-
-            if (!user) {
-                return notFound({
-                    errorMessage: `User with ID ${userId} not found`,
-                });
-            }
-
-            return ok(user);
+            const deleteUserUseCase = new DeleteUserUseCase();
+            const deletedUser = await deleteUserUseCase.execute(userId);
+            return ok(deletedUser);
         } catch (error) {
             console.error(error);
             return internalServerError({

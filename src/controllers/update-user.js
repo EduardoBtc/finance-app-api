@@ -1,4 +1,4 @@
-import { UpdateUserUseCase } from '../use-cases/update-user.js';
+import { UpdateUserUseCase } from '../use-cases/index.js';
 import {
     badRequest,
     internalServerError,
@@ -12,7 +12,7 @@ import {
     isEmailValid,
     isPasswordValid,
 } from './helpers/index.js';
-import { PostgresGetUserByIdRepository } from '../repositories/postgres/get-user-by-id.js';
+import { PostgresGetUserByIdRepository } from '../repositories/postgres/index.js';
 import { EmailAlreadyInUseError } from '../errors/users.js';
 
 export class UpdateUserController {
