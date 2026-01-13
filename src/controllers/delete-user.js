@@ -1,5 +1,3 @@
-import { DeleteUserUseCase } from '../use-cases/index.js';
-import { PostgresGetUserByIdRepository } from '../repositories/postgres/index.js';
 import {
     internalServerError,
     uuidInvalidResponse,
@@ -9,6 +7,11 @@ import {
 } from './helpers/index.js';
 
 export class DeleteUserController {
+    constructor(postgresGetUserByIdRepository, deleteUserUseCase) {
+        this.postgresGetUserByIdRepository = postgresGetUserByIdRepository;
+        this.deleteUserUseCase = deleteUserUseCase;
+    }
+
     async execute(httpRequest) {
         try {
             const userId = httpRequest.params.userId;
@@ -18,15 +21,13 @@ export class DeleteUserController {
                 return uuidInvalidResponse();
             }
 
-            const postgresGetUserByIdRepository =
-                new PostgresGetUserByIdRepository();
-            const user = await postgresGetUserByIdRepository.execute(userId);
+            const user =
+                await this.postgresGetUserByIdRepository.execute(userId);
             if (!user) {
                 return userNotFoundResponse(userId);
             }
 
-            const deleteUserUseCase = new DeleteUserUseCase();
-            const deletedUser = await deleteUserUseCase.execute(userId);
+            const deletedUser = await this.deleteUserUseCase.execute(userId);
             return ok(deletedUser);
         } catch (error) {
             console.error(error);

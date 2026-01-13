@@ -1,4 +1,3 @@
-import { UpdateUserUseCase } from '../use-cases/index.js';
 import {
     badRequest,
     internalServerError,
@@ -12,10 +11,14 @@ import {
     isEmailValid,
     isPasswordValid,
 } from './helpers/index.js';
-import { PostgresGetUserByIdRepository } from '../repositories/postgres/index.js';
 import { EmailAlreadyInUseError } from '../errors/users.js';
 
 export class UpdateUserController {
+    constructor(updateUserUseCase, getUserByIdUseCase) {
+        this.updateUserUseCase = updateUserUseCase;
+        this.getUserByIdUseCase = getUserByIdUseCase;
+    }
+
     async execute(httpRequest) {
         try {
             const params = httpRequest.body;
@@ -43,10 +46,7 @@ export class UpdateUserController {
                 });
             }
 
-            const postgresGetUserByIdRepository =
-                new PostgresGetUserByIdRepository();
-
-            const user = await postgresGetUserByIdRepository.execute(userId);
+            const user = await this.getUserByIdUseCase.execute(userId);
             if (!user) {
                 return userNotFoundResponse(userId);
             }
@@ -66,8 +66,7 @@ export class UpdateUserController {
                 }
             }
 
-            const updateUserUseCase = new UpdateUserUseCase();
-            const updatedUserResult = await updateUserUseCase.execute(
+            const updatedUserResult = await this.updateUserUseCase.execute(
                 userId,
                 params,
             );
