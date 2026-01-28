@@ -1,14 +1,15 @@
 import {
     internalServerError,
-    userNotFoundResponse,
-    ok,
     uuidInvalidResponse,
     isUserIdValid,
-} from './helpers/index.js';
+    ok,
+    userNotFoundResponse,
+} from '../helpers/index.js';
 
-export class GetUserByIdController {
-    constructor(getUserByIdUseCase) {
-        this.getUserByIdUseCase = getUserByIdUseCase;
+export class DeleteUserController {
+    constructor(postgresGetUserByIdRepository, deleteUserUseCase) {
+        this.postgresGetUserByIdRepository = postgresGetUserByIdRepository;
+        this.deleteUserUseCase = deleteUserUseCase;
     }
 
     async execute(httpRequest) {
@@ -20,13 +21,14 @@ export class GetUserByIdController {
                 return uuidInvalidResponse();
             }
 
-            const user = await this.getUserByIdUseCase.execute(userId);
-
+            const user =
+                await this.postgresGetUserByIdRepository.execute(userId);
             if (!user) {
                 return userNotFoundResponse(userId);
             }
 
-            return ok(user);
+            const deletedUser = await this.deleteUserUseCase.execute(userId);
+            return ok(deletedUser);
         } catch (error) {
             console.error(error);
             return internalServerError({

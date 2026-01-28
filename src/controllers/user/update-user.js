@@ -10,8 +10,8 @@ import {
     emailAlreadyInUseResponse,
     isEmailValid,
     isPasswordValid,
-} from './helpers/index.js';
-import { EmailAlreadyInUseError } from '../errors/users.js';
+} from '../helpers/index.js';
+import { EmailAlreadyInUseError } from '../../errors/users.js';
 
 export class UpdateUserController {
     constructor(updateUserUseCase, getUserByIdUseCase) {
